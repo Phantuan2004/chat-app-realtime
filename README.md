@@ -16,6 +16,7 @@ chat-app-realtime/
 ├─ chat-app-backend/ ← Laravel API + PostgreSQL
 └─ realtime/ ← Node.js + Socket.IO
 
+
 ---
 
 ## ⚙️ Công nghệ sử dụng

@@ -12,9 +12,9 @@ Dự án tách frontend, backend và realtime server, đồng thời triển kha
 
 ## 🧩 Cấu trúc dự án
 chat-app-realtime/
-├─ chat-app-frontend/ ← Vue.js SPA
-├─ chat-app-backend/ ← Laravel API + PostgreSQL
-└─ realtime/ ← Node.js + Socket.IO
+|-- chat-app-frontend/  <- Vue.js SPA
+|-- chat-app-backend/   <- Laravel API + PostgreSQL
+`-- realtime/           <- Node.js + Socket.IO
 
 ---
 

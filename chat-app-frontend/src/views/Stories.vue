@@ -5,7 +5,7 @@
                 <div class="tyn-aside-head">
                     <div class="tyn-aside-head-text">
                         <h3 class="tyn-aside-title tyn-title">Stories</h3>
-                        <span class="tyn-subtext">12 Unseen stories</span>
+                        <span class="tyn-subtext">{{ story_length }} Unseen stories</span>
                     </div><!-- .tyn-aside-head -->
                     <div class="tyn-aside-head-tools">
                         <ul class="tyn-list-inline gap gap-3">
@@ -21,24 +21,9 @@
                     <div class="tyn-aside-row pt-0">
                         <div class="tyn-stories-thumb swiper swiper-slider">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide">
-                                    <img src="/images/stories/thumb-1.jpg" class="tyn-image" alt="">
-                                </div><!-- .swiper-slide -->
-                                <div class="swiper-slide">
-                                    <img src="/images/stories/thumb-2.jpg" class="tyn-image" alt="">
-                                </div><!-- .swiper-slide -->
-                                <div class="swiper-slide">
-                                    <img src="/images/stories/thumb-3.jpg" class="tyn-image" alt="">
-                                </div><!-- .swiper-slide -->
-                                <div class="swiper-slide">
-                                    <img src="/images/stories/thumb-4.jpg" class="tyn-image" alt="">
-                                </div><!-- .swiper-slide -->
-                                <div class="swiper-slide">
-                                    <img src="/images/stories/thumb-5.jpg" class="tyn-image" alt="">
-                                </div><!-- .swiper-slide -->
-                                <div class="swiper-slide">
-                                    <img src="/images/stories/thumb-6.jpg" class="tyn-image" alt="">
-                                </div><!-- .swiper-slide -->
+                                <div v-for="story in stories" :key="story.id" class="swiper-slide">
+                                    <img :src="`/images/stories/${story.img}`" class="tyn-image" alt="">
+                                </div>
                             </div><!-- .swiper-wrapper -->
                         </div><!-- .tyn-stories-thumb -->
                     </div><!-- .tyn-aside-row -->
@@ -48,57 +33,12 @@
                 <div class="tyn-stories-wrap">
                     <div class="tyn-stories-slider swiper swiper-slider">
                         <div class="swiper-wrapper">
-                            <div class="swiper-slide">
+                            <div v-for="story in stories" :key="story.id" class="swiper-slide">
                                 <div class="tyn-stories-item">
-                                    <img src="/images/stories/1.jpg" class="tyn-image" alt="">
+                                    <img :src="`/images/stories/${story.img}`" class="tyn-image" alt="">
                                     <div class="tyn-stories-content">
-                                        <h5 class="tyn-stories-title text-white">Boating on ohio lake</h5>
-                                        <p class="text-white">#boating, #ohio</p>
-                                    </div>
-                                </div><!-- .tyn-stories-item -->
-                            </div><!-- .swiper-slide -->
-                            <div class="swiper-slide">
-                                <div class="tyn-stories-item">
-                                    <img src="/images/stories/2.jpg" class="tyn-image" alt="">
-                                    <div class="tyn-stories-content">
-                                        <h5 class="tyn-stories-title text-white">Wonderful evening with myself</h5>
-                                        <p class="text-white">#evening</p>
-                                    </div>
-                                </div><!-- .tyn-stories-item -->
-                            </div><!-- .swiper-slide -->
-                            <div class="swiper-slide">
-                                <div class="tyn-stories-item">
-                                    <img src="/images/stories/3.jpg" class="tyn-image" alt="">
-                                    <div class="tyn-stories-content">
-                                        <h5 class="tyn-stories-title text-white">Autumn holidays in australia</h5>
-                                        <p class="text-white">#Autumn, #australia</p>
-                                    </div>
-                                </div><!-- .tyn-stories-item -->
-                            </div><!-- .swiper-slide -->
-                            <div class="swiper-slide">
-                                <div class="tyn-stories-item">
-                                    <img src="/images/stories/4.jpg" class="tyn-image" alt="">
-                                    <div class="tyn-stories-content">
-                                        <h5 class="tyn-stories-title text-white">Ptotoshoot with Evelyn Martin</h5>
-                                        <p class="text-white">#Ptotoshoot</p>
-                                    </div>
-                                </div><!-- .tyn-stories-item -->
-                            </div><!-- .swiper-slide -->
-                            <div class="swiper-slide">
-                                <div class="tyn-stories-item">
-                                    <img src="/images/stories/5.jpg" class="tyn-image" alt="">
-                                    <div class="tyn-stories-content">
-                                        <h5 class="tyn-stories-title text-white">My beautifull sister</h5>
-                                        <p class="text-white">#sister, #goal</p>
-                                    </div>
-                                </div><!-- .tyn-stories-item -->
-                            </div><!-- .swiper-slide -->
-                            <div class="swiper-slide">
-                                <div class="tyn-stories-item">
-                                    <img src="/images/stories/6.jpg" class="tyn-image" alt="">
-                                    <div class="tyn-stories-content">
-                                        <h5 class="tyn-stories-title text-white">Frances Arnold's awesome Ptotoshoot</h5>
-                                        <p class="text-white">#ptotoshoot</p>
+                                        <h5 class="tyn-stories-title text-white">{{ story.title }}</h5>
+                                        <p class="text-white">{{ story.tags.join(', ') }}</p>
                                     </div>
                                 </div><!-- .tyn-stories-item -->
                             </div><!-- .swiper-slide -->
@@ -111,10 +51,15 @@
     </div>
 </template>
 <script>
+import stories from "../data/stories/index"
+
 export default {
-    name: "Stories"
+    name: "Stories",
+    data() {
+        return {
+            stories: stories,
+            story_length: stories.filter(story => !story.seen).length
+        }
+    },
 }
 </script>
-<style lang="">
-    
-</style>

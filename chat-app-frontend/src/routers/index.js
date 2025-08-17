@@ -19,8 +19,9 @@ const routes = [
         component: LayoutDetail,
         children: [
             {
-                path: 'index', 
-                component: Index, 
+                path: '',
+                name: 'index',
+                component: Index,
                 meta: {
                     componentsInRoot: [
                         'Header'
@@ -39,17 +40,8 @@ const routes = [
             },
 
             {
-                path: '/',
-                component: Login,
-                meta: {
-                    componentsChatorFooter: [
-                        'ChatBox'
-                    ],
-                }
-            },
-
-            {
-                path: 'chatbotnew',
+                path: 'chat-bot-new',
+                name: 'chat-bot-new',
                 component: ChatBotNew,
                 meta: {
                     componentsInRoot: [
@@ -59,7 +51,8 @@ const routes = [
             },
 
             {
-                path: 'chatbot',
+                path: 'chat-bot',
+                name: 'chat-bot',
                 component: ChatBot,
                 meta: {
                     componentsInRoot: [
@@ -69,7 +62,8 @@ const routes = [
             },
 
             {
-                path: 'chatbotwelcome',
+                path: 'chat-bot-welcome',
+                name: 'chat-bot-welcome',
                 component: ChatBotWelcome,
                 meta: {
                     componentsInRoot: [
@@ -84,6 +78,7 @@ const routes = [
 
             {
                 path: 'contacts',
+                name: 'contacts',
                 component: Contacts,
                 meta: {
                     componentsInRoot: [
@@ -102,6 +97,7 @@ const routes = [
 
             {
                 path: 'faq',
+                name: 'faq',
                 component: Faq,
                 meta: {
                     componentsInRoot: [
@@ -116,6 +112,7 @@ const routes = [
 
             {
                 path: 'forgot',
+                name: 'forgot',
                 component: Forgot,
                 meta: {
                     componentsChatorFooter: [
@@ -126,6 +123,7 @@ const routes = [
 
             {
                 path: 'pricing',
+                name: 'pricing',
                 component: Pricing,
                 meta: {
                     componentsInRoot: [
@@ -140,6 +138,7 @@ const routes = [
 
             {
                 path: 'profile',
+                name: 'profile',
                 component: Profile,
                 meta: {
                     componentsInRoot: [
@@ -157,17 +156,8 @@ const routes = [
             },
 
             {
-                path: 'register',
-                component: Register,
-                meta: {
-                    componentsChatorFooter: [
-                        'ChatBox'
-                    ]
-                }
-            },
-
-            {
                 path: 'stories',
+                name: 'stories',
                 component: Stories,
                 meta: {
                     componentsInRoot: [
@@ -179,11 +169,33 @@ const routes = [
                 }
             }
         ]
-    }
+    },
+
+    {
+        path: '/login',
+        redirect : '/login',
+        component: Login,
+        meta: {
+            componentsChatorFooter: [
+                'ChatBox'
+            ],
+        }
+    },
+
+    {
+        path: '/register',
+        component: Register,
+        meta: {
+            componentsChatorFooter: [
+                'ChatBox'
+            ]
+        }
+    },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
+  linkExactActiveClass: 'active',
   routes
 });
 

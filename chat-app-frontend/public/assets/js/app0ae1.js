@@ -2,22 +2,22 @@
     "use strict";
 
     // Active Link
-    TynApp.ActiveLink = function(selector, active){
-      let elm = document.querySelectorAll(selector);
-      let currentURL = document.location.href,
-          removeHash = currentURL.substring(0, (currentURL.indexOf("#") == -1) ? currentURL.length : currentURL.indexOf("#")),
-          removeQuery = removeHash.substring(0, (removeHash.indexOf("?") == -1) ? removeHash.length : removeHash.indexOf("?")),
-          fileName = removeQuery;
+    // TynApp.ActiveLink = function(selector, active){
+    //   let elm = document.querySelectorAll(selector);
+    //   let currentURL = document.location.href,
+    //       removeHash = currentURL.substring(0, (currentURL.indexOf("#") == -1) ? currentURL.length : currentURL.indexOf("#")),
+    //       removeQuery = removeHash.substring(0, (removeHash.indexOf("?") == -1) ? removeHash.length : removeHash.indexOf("?")),
+    //       fileName = removeQuery;
 
-      elm && elm.forEach(function(item){
-        var selfLink = item.getAttribute('href');
-        if (fileName.match(selfLink)) {
-          item.parentElement.classList.add(...active);
-        } else {
-          item.parentElement.classList.remove(...active);
-        }
-      })
-    }
+    //   elm && elm.forEach(function(item){
+    //     var selfLink = item.getAttribute('href') || item.getAttribute('to');
+    //     if (fileName.match(selfLink)) {
+    //       item.parentElement.classList.add(...active);
+    //     } else {
+    //       item.parentElement.classList.remove(...active);
+    //     }
+    //   })
+    // }
 
     TynApp.Appbar = function(){
       let elm = document.querySelector('.tyn-appbar');

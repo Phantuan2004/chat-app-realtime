@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -49,15 +50,28 @@ class AuthController extends Controller
         }
 
         // Create token
-        $token = $user->createToken('chat-app-token');
+        $tokenResult = $user->createToken('chat-app-token');
+        $accessToken = $tokenResult->accessToken;
+        $token = $tokenResult->token;
+
+        $token->expires_at = Carbon::now()->addSeconds(20);
+        $token->save();
+
+        $expiresIn = Carbon::parse($token->expires_at)->diffInSeconds(now());
+
+        $expiresAtVN = Carbon::parse($token->expires_at)
+                        ->setTimezone('Asia/Ho_Chi_Minh')
+                        ->toDateTimeString();
 
         return response()->json([
             'status' => 'success',
             'message' => 'User logged in successfully',
             'data' => [
                 'user' => $user,
-                'access_token' => $token->accessToken,
-                'token_type' => 'Bearer'
+                'access_token' => $accessToken,
+                'token_type' => 'Bearer',
+                'expires_at' => $expiresAtVN,
+                'expires_in' => $expiresIn
             ]
         ], 200);
     }

@@ -28,4 +28,3 @@ Route::middleware(['auth:api', 'check.token.expiry'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
-Route::post('/oauth/token', [AuthController::class, 'refresh']);

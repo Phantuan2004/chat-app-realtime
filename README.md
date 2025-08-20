@@ -22,7 +22,7 @@ chat-app-realtime/
 | Thành phần       | Công nghệ & Tools                  |
 |-----------------|-----------------------------------|
 | Frontend        | Vue.js, Socket.IO-client, Axios    |
-| Backend API     | Laravel, PostgreSQL, Passport/ Sanctum |
+| Backend API     | Laravel, PostgreSQL, Laravel Passport (OAuth 2.0 Password Grant, JWT tokens) |
 | Realtime Server | Node.js, Express.js, Socket.IO     |
 | Deployment      | Vercel (frontend), Render/Railway (backend + realtime) |
 | CI/CD           | Vercel (frontend), GitHub Actions (backend/realtime) |

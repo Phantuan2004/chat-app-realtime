@@ -21,7 +21,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="username">Your Name</label>
                                             <div class="form-control-wrap">
-                                                <input type="text" class="form-control" id="username" placeholder="yourname">
+                                                <input type="text" v-model="name" class="form-control" id="username" placeholder="yourname">
                                             </div>
                                         </div><!-- .form-group -->
                                     </div><!-- .col -->
@@ -29,7 +29,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="email-address">Email Address</label>
                                             <div class="form-control-wrap">
-                                                <input type="text" class="form-control" id="email-address" placeholder="youremail@example.com">
+                                                <input type="text" v-model="email" class="form-control" id="email-address" placeholder="youremail@example.com">
                                             </div>
                                         </div><!-- .form-group -->
                                     </div><!-- .col -->
@@ -37,7 +37,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="password">Password</label>
                                             <div class="form-control-wrap">
-                                                <input type="password" class="form-control" id="password" placeholder="password">
+                                                <input type="password" v-model="password" class="form-control" id="password" placeholder="password">
                                             </div>
                                         </div><!-- .form-group -->
                                     </div><!-- .col -->
@@ -45,7 +45,7 @@
                                         <div class="form-group">
                                             <label class="form-label" for="repeat-password">Password Repeat</label>
                                             <div class="form-control-wrap">
-                                                <input type="password" class="form-control" id="repeat-password" placeholder="password again">
+                                                <input type="password" v-model="password_confirm" class="form-control" id="repeat-password" placeholder="password again">
                                             </div>
                                         </div><!-- .form-group -->
                                     </div><!-- .col -->
@@ -57,7 +57,7 @@
                                         </div><!-- .form-check -->
                                     </div><!-- .col -->
                                     <div class="col-12">
-                                        <a class="btn btn-primary w-100" href="index.html">Account Register</a>
+                                        <button class="btn btn-primary w-100" type="button" @click="handleRegister">Account Register</button>
                                     </div><!-- .col -->
                                 </div><!-- .row -->
                             </div><!-- .p-4 -->
@@ -82,7 +82,7 @@
                             </div><!-- .p-4 -->
                         </div><!-- .card -->
                         <div class="text-center mt-4">
-                            <p class="small">Already have an account? <a href="login.html">Login</a></p>
+                            <p class="small">Already have an account? <router-link to="/login">Login</router-link></p>
                         </div>
                     </div><!-- .col -->
                 </div><!-- .row -->
@@ -91,8 +91,47 @@
     </div>
 </template>
 <script>
+import {ref} from 'vue';
+import router from '../routers/index';
+import { register } from '../services/auth/authService';
+
 export default {
-    name: 'Register'
+    name: 'Register',
+
+    setup() {
+        const name = ref('');
+        const email = ref('');
+        const password = ref('');
+        const password_confirm = ref('');
+
+        const handleRegister = async () => {
+            try {
+                const res = await register(name.value, email.value, password.value, password_confirm.value);
+
+                let accessToken = res.data.access_token || res.data.data?.access_token;
+                let refreshToken = res.data.refresh_token || res.data.data?.refresh_token;
+
+                if (accessToken && refreshToken) {
+                    localStorage.setItem('access_token', accessToken);
+                    localStorage.setItem('refresh_token', refreshToken);
+                    await router.push('/home');
+                } else {
+                    throw new Error('Register successful but no tokens received');
+                }
+            } catch (error) {
+                alert('Registration failed. Please try again.');
+                console.error(`Registration error: ${error}`);
+            }
+        };
+
+        return {
+            name,
+            email,
+            password,
+            password_confirm,
+            handleRegister
+        };
+    }
 }
 </script>
 <style lang="">

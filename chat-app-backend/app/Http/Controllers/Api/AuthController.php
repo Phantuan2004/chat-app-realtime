@@ -7,8 +7,10 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request as HttpRequest;
 
 class AuthController extends Controller
 {
@@ -43,38 +45,52 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
+        // 1) Check credentials trước cho nhanh + thông báo rõ ràng
         $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Create token
-        $tokenResult = $user->createToken('chat-app-token');
-        $accessToken = $tokenResult->accessToken;
-        $token = $tokenResult->token;
+        // 2) Gọi nội bộ tới /oauth/token (Passport) -> không qua HTTP nên rất nhanh
+        $clientId = config('passport.password_grant_client.id', env('PASSPORT_PASSWORD_GRANT_CLIENT_ID'));
+        $clientSecret = config('passport.password_grant_client.secret', env('PASSPORT_PASSWORD_GRANT_CLIENT_SECRET'));
 
-        $token->expires_at = Carbon::now()->addSeconds(20);
-        $token->save();
+        $internal = HttpRequest::create('/oauth/token', 'POST', [
+            'grant_type'    => 'password',
+            'client_id'     => $clientId,
+            'client_secret' => $clientSecret,
+            'username'      => $request->email,
+            'password'      => $request->password,
+            'scope'         => '',
+        ], [], [], ['HTTP_ACCEPT' => 'application/json']);
 
-        $expiresIn = Carbon::parse($token->expires_at)->diffInSeconds(now());
+        $passportResponse = app()->handle($internal);
 
-        $expiresAtVN = Carbon::parse($token->expires_at)
-                        ->setTimezone('Asia/Ho_Chi_Minh')
-                        ->toDateTimeString();
+        if ($passportResponse->getStatusCode() !== 200) {
+            // Trả thẳng lỗi của Passport (ví dụ client_id/secret sai…)
+            return $passportResponse;
+        }
+
+        $token = json_decode($passportResponse->getContent(), true);
 
         return response()->json([
-            'status' => 'success',
+            'status'  => 'success',
             'message' => 'User logged in successfully',
             'data' => [
-                'user' => $user,
-                'access_token' => $accessToken,
-                'token_type' => 'Bearer',
-                'expires_at' => $expiresAtVN,
-                'expires_in' => $expiresIn
-            ]
+                'user' => [
+                    'id'    => $user->id,
+                    'name'  => $user->name,
+                    'email' => $user->email,
+                ],
+                'access_token'  => $token['access_token'],
+                'refresh_token' => $token['refresh_token'],
+                'token_type'    => $token['token_type'] ?? 'Bearer',
+                'expires_in'    => $token['expires_in'],
+                'expires_at'    => Carbon::now()->addSeconds($token['expires_in'])->toISOString(),
+            ],
         ], 200);
     }
+
 
     public function me(Request $request)
     {

@@ -25,6 +25,7 @@ class RegisterRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
+            'password_confirm' => 'required|min:6|same:password',
         ];
     }
 
@@ -37,6 +38,7 @@ class RegisterRequest extends FormRequest
             'email.unique' => 'Email has already been taken.',
             'password.required' => 'Password is required.',
             'password.min' => 'Password must be at least 6 characters.',
+            'password_confirm' => 'Password confirmation does not match.',
         ];
     }
 }

@@ -26,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
 
         // Config Passport
         Passport::tokensExpireIn(now()->addHours(1)); // Access tokens expire after 1 hour
-        Passport::refreshTokensExpireIn(now()->addDays(7)); // Refresh tokens expire after 7 days
+        Passport::refreshTokensExpireIn(now()->addDays(30)); // Refresh tokens expire after 30 days
+        Passport::enablePasswordGrant();
     }
 }

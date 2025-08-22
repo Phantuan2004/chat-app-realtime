@@ -1,9 +1,17 @@
-// router/index.js
-import { createRouter, createWebHistory } from 'vue-router';
-import LayoutDetail from '../layouts/LayoutDetail.vue';
-import Index from '../views/Index.vue';
-import Login from '../views/Login.vue';
-import Register from '../views/Register.vue';
+import {createRouter, createWebHistory} from "vue-router";
+import LayoutDetail from "../layouts/LayoutDetail.vue";
+import ChatBot from "../views/ChatBot.vue";
+import ChatBotNew from "../views/ChatBotNew.vue";
+import ChatBotWelcome from "../views/ChatBotWelcome.vue";
+import Contacts from "../views/Contacts.vue";
+import Faq from "../views/Faq.vue";
+import Forgot from "../views/Forgot.vue";
+import Index from "../views/Index.vue";
+import Login from "../views/Login.vue";
+import Pricing from "../views/Pricing.vue";
+import Profile from "../views/Profile.vue";
+import Register from "../views/Register.vue";
+import Stories from "../views/Stories.vue";
 import { getCurrentUser } from '../services/auth/authService';
 
 const routes = [
@@ -12,19 +20,173 @@ const routes = [
     redirect: () => localStorage.getItem('access_token') ? '/home' : '/login'
   },
   {
-    path: '/',
-    component: LayoutDetail,
-    children: [
-      { path: 'home', component: Index, meta: { requiresAuth: true } },
-      { path: 'profile', component: () => import('../views/Profile.vue'), meta: { requiresAuth: true } },
-      { path: 'chat-bot', component: () => import('../views/ChatBot.vue'), meta: { requiresAuth: true } },
-      { path: 'faq', component: () => import('../views/Faq.vue'), meta: { requiresAuth: true } },
-      { path: 'pricing', component: () => import('../views/Pricing.vue'), meta: { requiresAuth: true } },
-      { path: 'stories', component: () => import('../views/Stories.vue'), meta: { requiresAuth: true } },
-    ]
-  },
-  { path: '/login', component: Login },
-  { path: '/register', component: Register },
+          path: "/",
+          component: LayoutDetail,
+          children: [
+              {
+                  path: 'home',
+                  name: 'home',
+                  component: Index,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ],
+                      componentsChatorFooter: [
+                          'ChatBox'
+                      ],
+                      componentsOutsideRoot: [
+                          'ModalCall',
+                          'ModalVideoCall',
+                          'ModalMuteOpt',
+                          'ModalNewChat',
+                          'ModalDeleteChat',
+                      ],
+                      requiresAuth: true
+                  }
+              },
+  
+              {
+                  path: 'chat-bot-new',
+                  name: 'chat-bot-new',
+                  component: ChatBotNew,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ]
+                  }
+              },
+  
+              {
+                  path: 'chat-bot',
+                  name: 'chat-bot',
+                  component: ChatBot,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ]
+                  }
+              },
+  
+              {
+                  path: 'chat-bot-welcome',
+                  name: 'chat-bot-welcome',
+                  component: ChatBotWelcome,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ],
+                      componentsChatorFooter: [
+                          'Footer',
+                          'ChatBox'
+                      ]
+                  }
+              },
+  
+              {
+                  path: 'contacts',
+                  name: 'contacts',
+                  component: Contacts,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ],
+                      componentsChatorFooter: [
+                          'ChatBox'
+                      ],
+                      componentsOutsideRoot: [
+                          'ModalCall',
+                          'ModalVideoCall',
+                          'ModalContact'
+                      ]
+                  }
+              },
+  
+              {
+                  path: 'faq',
+                  name: 'faq',
+                  component: Faq,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ],
+                      componentsChatorFooter: [
+                          'Footer',
+                          'ChatBox'
+                      ]
+                  }
+              },
+  
+              {
+                  path: 'forgot',
+                  name: 'forgot',
+                  component: Forgot,
+                  meta: {
+                      componentsChatorFooter: [
+                          'ChatBox'
+                      ]
+                  }
+              },
+  
+              {
+                  path: 'pricing',
+                  name: 'pricing',
+                  component: Pricing,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ],
+                      componentsChatorFooter: [
+                          'Footer',
+                          'ChatBox'
+                      ]
+                  }
+              },
+  
+              {
+                  path: 'profile',
+                  name: 'profile',
+                  component: Profile,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ],
+                      componentsChatorFooter: [
+                          'ChatBox'
+                      ],
+                      componentsOutsideRoot: [
+                          'ModalCall',
+                          'ModalVideoCall',
+                          'ModalContact'
+                      ],
+                      requiresAuth: true
+                  }
+              },
+  
+              {
+                  path: 'stories',
+                  name: 'stories',
+                  component: Stories,
+                  meta: {
+                      componentsInRoot: [
+                          'Header'
+                      ],
+                      componentsChatorFooter: [
+                          'ChatBox'
+                      ]
+                  }
+              },
+
+              {
+                  path: '/login',
+                  component: Login,
+              },
+          
+              {
+                  path: '/register',
+                  component: Register,
+              },
+          ]
+      },
 ];
 
 const router = createRouter({

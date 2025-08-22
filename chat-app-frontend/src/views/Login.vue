@@ -22,6 +22,7 @@
                       <label class="form-label" for="email-address">Email Address</label>
                       <div class="form-control-wrap">
                         <input type="text" v-model="email" class="form-control" id="email-address" placeholder="youremail@example.com">
+                        <span v-if="error.email" class="error">{{ error.email }}</span>
                       </div>
                     </div>
                   </div>
@@ -30,10 +31,12 @@
                       <label class="form-label d-flex" for="password">Password <a href="forgot.html" class="link link-primary ms-auto">Forgot ?</a></label>
                       <div class="form-control-wrap">
                         <input type="password" v-model="password" class="form-control" id="password" placeholder="password">
+                        <span v-if="error.password" class="error">{{ error.password }}</span>
                       </div>
                     </div>
                   </div>
                   <div class="col-12">
+                    <Toast />
                     <button class="btn btn-primary w-100" type="button" @click="handleLogin">Account Login</button>
                   </div>
                 </div>
@@ -65,38 +68,92 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { reactive, ref, getCurrentInstance } from 'vue';
 import router from '../routers/index';
 import { login } from '../services/auth/authService';
+import Toast from 'primevue/toast';
 
 export default {
   name: 'Login',
+  components: { Toast },
   setup() {
     const email = ref('');
     const password = ref('');
+    const { proxy } = getCurrentInstance();
+
+    // reactive object lưu lỗi
+    const error = reactive({
+      email: '',
+      password: ''
+    });
 
     const handleLogin = async () => {
+      // reset lỗi trước khi gửi request
+      error.email = '';
+      error.password = '';
+
       try {
         const response = await login(email.value, password.value);
-        // console.log('Response from login:', response.data);
 
-        let accessToken = response.data.access_token || response.data.data?.access_token;
-        let refreshToken = response.data.refresh_token || response.data.data?.refresh_token;
+        const accessToken = response.data.access_token || response.data.data?.access_token;
+        const refreshToken = response.data.refresh_token || response.data.data?.refresh_token;
 
         if (accessToken && refreshToken) {
           localStorage.setItem('access_token', accessToken);
           localStorage.setItem('refresh_token', refreshToken);
+
+          proxy.$toast.add({
+            severity: 'success',
+            summary: 'Login Successful',
+            detail: 'You have successfully logged in.',
+            life: 3000,
+          });
+
           await router.push('/home');
         } else {
           throw new Error('Login successful but no tokens received');
         }
-      } catch (error) {
-        alert('Login failed. Please check your credentials.');
-        console.error('Login failed:', error);
+      } catch (err) {
+        if (err.response) {
+          const data = err.response.data;
+
+          // validate theo field
+          if (data.errors) {
+            for (const key in data.errors) {
+              if (error.hasOwnProperty(key)) {
+                error[key] = data.errors[key][0]; // lấy lỗi đầu tiên
+              }
+            }
+          }
+
+          // lỗi chung
+          if (data.message && !data.errors) {
+            proxy.$toast.add({
+              severity: 'error',
+              summary: 'Login Failed',
+              detail: data.message,
+            });
+          }
+        } else {
+          proxy.$toast.add({
+            severity: 'error',
+            summary: 'Login Failed',
+            detail: 'An unexpected error occurred.',
+          });
+        }
       }
     };
 
-    return { email, password, handleLogin };
+    return { email, password, error, handleLogin };
   },
 };
 </script>
+
+
+<style scoped>
+.error {
+  color: red;
+  font-size: 0.75rem;
+  margin-left: 5px;
+}
+</style>

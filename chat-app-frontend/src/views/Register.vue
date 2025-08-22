@@ -1,4 +1,4 @@
-<template lang="">
+<template>
     <div>
         <div class="tyn-content tyn-auth tyn-auth-centered">
             <div class="container">
@@ -22,6 +22,7 @@
                                             <label class="form-label" for="username">Your Name</label>
                                             <div class="form-control-wrap">
                                                 <input type="text" v-model="name" class="form-control" id="username" placeholder="yourname">
+                                                <span v-if="error.name" class="error">{{ error.name }}</span>
                                             </div>
                                         </div><!-- .form-group -->
                                     </div><!-- .col -->
@@ -30,6 +31,7 @@
                                             <label class="form-label" for="email-address">Email Address</label>
                                             <div class="form-control-wrap">
                                                 <input type="text" v-model="email" class="form-control" id="email-address" placeholder="youremail@example.com">
+                                                <span v-if="error.email" class="error">{{ error.email }}</span>
                                             </div>
                                         </div><!-- .form-group -->
                                     </div><!-- .col -->
@@ -38,6 +40,7 @@
                                             <label class="form-label" for="password">Password</label>
                                             <div class="form-control-wrap">
                                                 <input type="password" v-model="password" class="form-control" id="password" placeholder="password">
+                                                <span v-if="error.password" class="error">{{ error.password }}</span>
                                             </div>
                                         </div><!-- .form-group -->
                                     </div><!-- .col -->
@@ -46,6 +49,7 @@
                                             <label class="form-label" for="repeat-password">Password Repeat</label>
                                             <div class="form-control-wrap">
                                                 <input type="password" v-model="password_confirm" class="form-control" id="repeat-password" placeholder="password again">
+                                                <span v-if="error.password_confirm" class="error">{{ error.password_confirm }}</span>
                                             </div>
                                         </div><!-- .form-group -->
                                     </div><!-- .col -->
@@ -57,6 +61,7 @@
                                         </div><!-- .form-check -->
                                     </div><!-- .col -->
                                     <div class="col-12">
+                                        <Toast />
                                         <button class="btn btn-primary w-100" type="button" @click="handleRegister">Account Register</button>
                                     </div><!-- .col -->
                                 </div><!-- .row -->
@@ -91,20 +96,40 @@
     </div>
 </template>
 <script>
-import {ref} from 'vue';
+import {ref, getCurrentInstance} from 'vue';
 import router from '../routers/index';
 import { register } from '../services/auth/authService';
+import Toast from 'primevue/toast';
 
 export default {
     name: 'Register',
+    compose: {
+        Toast
+    },
 
     setup() {
         const name = ref('');
         const email = ref('');
         const password = ref('');
         const password_confirm = ref('');
+        const {proxy} = getCurrentInstance();
+
+        const error = ref ({
+            name: '',
+            email: '',
+            password: '',
+            password_confirm: ''
+        });
 
         const handleRegister = async () => {
+            // reset lỗi trước khi gửi request
+            error.value = {
+                name: '',
+                email: '',
+                password: '',
+                password_confirm: ''
+            }
+
             try {
                 const res = await register(name.value, email.value, password.value, password_confirm.value);
 
@@ -114,13 +139,44 @@ export default {
                 if (accessToken && refreshToken) {
                     localStorage.setItem('access_token', accessToken);
                     localStorage.setItem('refresh_token', refreshToken);
+
+                    proxy.$toast.add({
+                        severity: 'success',
+                        summary: 'Registration Successful',
+                        detail: 'You have been registered successfully!'
+                    })
                     await router.push('/home');
                 } else {
                     throw new Error('Register successful but no tokens received');
                 }
-            } catch (error) {
-                alert('Registration failed. Please try again.');
-                console.error(`Registration error: ${error}`);
+            } catch (err) {
+                if (err.response) {
+                    const data = err.response.data;
+
+                    // validate theo field
+                    if (data.errors) {
+                        for (const key in data.errors) {
+                            if (error.value.hasOwnProperty(key)) {
+                                error.value[key] = data.errors[key][0]; // lấy lỗi đầu tiên
+                            }
+                        }
+                    }
+
+                    // lỗi chung
+                    if (data.message && !data.errors) {
+                            proxy.$toast.add({
+                                severity: 'error',
+                                summary: 'Registration Failed',
+                                detail: data.message,
+                            });
+                    }
+                } else {
+                    proxy.$toast.add({
+                        severity: 'error',
+                        summary: 'Registration Failed',
+                        detail: 'An unexpected error occurred.',
+                    });
+                }
             }
         };
 
@@ -129,11 +185,16 @@ export default {
             email,
             password,
             password_confirm,
+            error,
             handleRegister
         };
     }
 }
 </script>
-<style lang="">
-    
+<style scoped>
+    .error {
+        color: red;
+        font-size: 0.75rem;
+        margin-left: 5px;
+    }
 </style>

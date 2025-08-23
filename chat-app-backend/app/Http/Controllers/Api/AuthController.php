@@ -23,13 +23,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Create user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
         $clientId = config('passport.password_grant_client.id', env('PASSPORT_PASSWORD_GRANT_CLIENT_ID'));
         $clientSecret = config('passport.password_grant_client.secret', env('PASSPORT_PASSWORD_GRANT_CLIENT_SECRET'));
 
@@ -50,6 +43,13 @@ class AuthController extends Controller
         }
 
         $token = json_decode($passportResponse->getContent(), true);
+
+        // Create user
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
         return response()->json([
             'status' => 'success',

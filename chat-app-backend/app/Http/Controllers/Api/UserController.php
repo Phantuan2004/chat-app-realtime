@@ -54,14 +54,6 @@ class UserController extends Controller
         // Hash the password
         $userData['password'] = bcrypt($userData['password']);
 
-        // Check email 
-        if (User::where('email', $userData['email'])->exists()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Email already exists'
-            ], 422);
-        }
-
         $user = User::create($userData);
         return response()->json([
             'status' => 'success',

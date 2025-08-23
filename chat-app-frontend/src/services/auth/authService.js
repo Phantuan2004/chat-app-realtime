@@ -101,7 +101,7 @@ api.interceptors.response.use(
 
 // Login
 export const login = async (email, password) => {
-  const response = await axios.post(`${API_URL}/api/login`, { email, password });
+  const response = await api.post(`${API_URL}/api/login`, { email, password });
   if (response.data.data.access_token && response.data.data.refresh_token) {
     localStorage.setItem('access_token', response.data.data.access_token);
     localStorage.setItem('refresh_token', response.data.data.refresh_token);
@@ -111,7 +111,7 @@ export const login = async (email, password) => {
 
 // Register
 export const register = async (name, email, password, password_confirm) => {
-  const response = await axios.post(`${API_URL}/api/register`, {
+  const response = await api.post(`${API_URL}/api/register`, {
     name,
     email,
     password,
